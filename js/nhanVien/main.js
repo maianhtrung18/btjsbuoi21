@@ -11,7 +11,7 @@ function setLocalStorge(){
 
 function getLocalStorage(){
     danhSachNhanVien.danhSachNhanVien = JSON.parse(localStorage.getItem("DSNV"));
-    hienThiTable();
+    hienThiTable(danhSachNhanVien.danhSachNhanVien);
 }
 
 function updateMemory(){
@@ -34,6 +34,8 @@ function xemNhanVien(taiKhoan){
     getELE("luongCB").value = danhSachNhanVien.danhSachNhanVien[viTri].luongCoBan;
     getELE("chucvu").value = danhSachNhanVien.danhSachNhanVien[viTri].chucVu;
     getELE("gioLam").value = danhSachNhanVien.danhSachNhanVien[viTri].gioLam;
+
+    getELE("tknv").disabled = true;
 }
 
 function themNhanVien(){
@@ -46,7 +48,7 @@ function themNhanVien(){
     var chucVu = getELE("chucvu").value;
     var gioLam = getELE("gioLam").value;
 
-    isValid = true;
+    var isValid = validationField(hoTen, email, password, luongCoBan, gioLam);
 
     isValid &= validation.checkEmpty(taiKhoan, "Không được để trống field này", "tbTKNV");
     if(isValid){
@@ -55,6 +57,20 @@ function themNhanVien(){
     if(isValid){
         isValid &= validation.checkUnique(taiKhoan, "Tài khoản đã được đăng ký", "tbTKNV", danhSachNhanVien.danhSachNhanVien);
     }
+
+    if(isValid){
+        var nhanVien = new NhanVien(taiKhoan, hoTen, email, password, ngayLam, luongCoBan, chucVu, gioLam);
+        nhanVien.tinhTongLuong();
+        nhanVien.xepLoaiNhanVien()
+        danhSachNhanVien.themNhanVien(nhanVien);
+        updateMemory();
+    }
+}
+
+function validationField(hoTen, email, password, luongCoBan, gioLam){
+    isValid = true;
+
+   
 
     if(validation.checkEmpty(hoTen, "Họ tên không được để trống", "tbTen")){
         isValid &= validation.checkHoTen(hoTen, "Họ tên phải là chữ", "tbTen");
@@ -92,27 +108,15 @@ function themNhanVien(){
     else{
         isValid = false;
     }
+    return isValid;
     
-    
-    
-
-    if(isValid){
-        var nhanVien = new NhanVien(taiKhoan, hoTen, email, password, ngayLam, luongCoBan, chucVu, gioLam);
-        nhanVien.tinhTongLuong();
-        nhanVien.xepLoaiNhanVien()
-        danhSachNhanVien.themNhanVien(nhanVien);
-        updateMemory();
-    }
-
-    
-
 }
 getLocalStorage();
 getELE("btnThemNV").onclick = themNhanVien;
 
-function hienThiTable(){
+function hienThiTable(danhSachNV){
     danhSach = ""
-    danhSachNhanVien.danhSachNhanVien.map(function(item){
+    danhSachNV.map(function(item){
         danhSach += `
         <tr>
             <td>${item.taiKhoan}</td>
@@ -131,4 +135,45 @@ function hienThiTable(){
         
     });
     document.getElementById("tableDanhSach").innerHTML = danhSach;
+}
+
+document.getElementById("btnCapNhat").onclick = capNhatNhanVien;
+function capNhatNhanVien(){
+    var taiKhoan = getELE("tknv").value;
+    var hoTen = getELE("name").value;
+    var email = getELE("email").value;
+    var password = getELE("password").value;
+    var ngayLam = getELE("datepicker").value;
+    var luongCoBan = getELE("luongCB").value;
+    var chucVu = getELE("chucvu").value;
+    var gioLam = getELE("gioLam").value;
+    var isValid = validationField(hoTen, email, password, luongCoBan, gioLam);
+
+    if(isValid){
+        var nhanVien = new NhanVien(taiKhoan, hoTen, email, password, ngayLam, luongCoBan, chucVu, gioLam);
+        nhanVien.tinhTongLuong();
+        nhanVien.xepLoaiNhanVien()
+        danhSachNhanVien.danhSachNhanVien[danhSachNhanVien.timViTri(taiKhoan)] = nhanVien;
+        updateMemory();
+    }
+}
+
+document.getElementById("btnTimNV").onclick = timNhanVien;
+function timNhanVien(){
+    var loaiNhanVien = document.getElementById("searchName").value;
+    if(loaiNhanVien!=""){
+        var result = danhSachNhanVien.danhSachNhanVien.filter(function(nhanVien){
+            return loaiNhanVien == nhanVien.loaiNhanVien;
+        });
+        hienThiTable(result);
+    }
+    else{
+        getLocalStorage();
+    }
+}
+document.getElementById("btnDong").onclick = resetForm;
+function resetForm(){
+    document.querySelector([role="form"]).reset();
+    getELE("tknv").disabled = false;
+
 }

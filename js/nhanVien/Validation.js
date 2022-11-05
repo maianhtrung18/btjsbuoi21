@@ -85,12 +85,12 @@ function Validation(){
         return false
     }
     this.checkGioLam = function(value, msgErr, spanID){
-        if(value<=80 && value>=200){
+        if(value>=80 && value<=200){
             document.getElementById(spanID).innerHTML = "";
             return true;
         }
         document.getElementById(spanID).innerHTML = msgErr;
-        ocument.getElementById(spanID).style.display = "block";
+        document.getElementById(spanID).style.display = "block";
         return false
     }
 }  
