@@ -20,6 +20,16 @@ function Validation(){
         return false;
     }
 
+    this.checkNgayThangNam = function(valInput, msgErr, spanID){
+        var pattern = /^(0?[1-9]|1[012])[\/\-](0?[1-9]|[12][0-9]|3[01])[\/\-]\d{4}$/;
+        if(valInput.match(pattern)){
+            document.getElementById(spanID).innerHTML = "";
+            return true;
+        }
+        document.getElementById(spanID).innerHTML = msgErr;
+        return false;
+    }
+
     this.checkUnique = function(value, msgErr, spanID, array){
         if(array.some(function(element){
             return value == element.taiKhoan;

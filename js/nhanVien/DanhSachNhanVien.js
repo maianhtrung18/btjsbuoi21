@@ -15,5 +15,17 @@ function DanhSachNhanVien(){
     });
     return viTri;
  }
+}
 
+DanhSachNhanVien.prototype.timNhanVien = function(value){
+   mangNV = [];
+   var tuKhoa = value.toLowerCase().replace(/\s/g, "");
+
+   this.danhSachNhanVien.map(function(nhanVien){
+      if(nhanVien.loaiNhanVien.toLowerCase().replace(/\s/g, "").indexOf(tuKhoa) > -1){
+         mangNV.push(nhanVien);
+      }
+   });
+
+   return mangNV;
 }
